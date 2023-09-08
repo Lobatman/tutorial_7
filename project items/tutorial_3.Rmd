@@ -1,0 +1,356 @@
+---
+title: | 
+  ![](https://i.imgur.com/SWWUQpP.png){width=500px style="display: block; margin:0 auto;"} 
+  Tutorial 4 - Entendendo a relação entre variáveis por meio do estudo de correlação e regressão: da construção de gráficos aos testes estatísticos
+author: "Victor Lobato dos Santos"
+date: "2023-03-22"
+output:
+  html_document:
+    highlight: haddock
+    includes:
+      in_header: "fever_icon.html"
+    theme: flatly
+    number_sections: yes
+    toc: yes
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+  pdf_document:
+    toc: yes
+---
+
+<div class="text-justify">  
+
+# Correlação  
+
+A correlação é o estudo da associação que existe entre variáveis(x e y). Podemos classificar a correlação como forte, fraca e nula, sendo ela linear ou não linear, positiva ou negativa.  
+Os diagramas de dispersão, nos dão uma noção da correlação entre variáveis, porém, apenas o diagrama não pode ser considerado um indicador de correlação. Veja alguns exemplos de correlação, forte, fraca e nula através de gráficos de dispersão:
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+set.seed(123)
+
+x_forte <- rnorm(100, mean = 0, sd = 1)
+y_forte <- x_forte + rnorm(100, mean = 0, sd = 1)
+
+x_fraca <- rnorm(100, mean = 0, sd = 1)
+y_fraca <- 0.5 * x_fraca + rnorm(100, mean = 0, sd = 1)
+
+x_nula <- rnorm(100, mean = 0, sd = 1)
+y_nula <- rnorm(100, mean = 0, sd = 1)
+
+cor_forte <- cor(x_forte, y_forte)
+cor_fraca <- cor(x_fraca, y_fraca)
+cor_nula <- cor(x_nula, y_nula)
+
+par(mfrow = c(1, 3))
+
+#forte
+plot(x_forte, y_forte, main = paste("Correlação forte:", round(cor_forte, 2)))
+
+#fraca
+plot(x_fraca, y_fraca, main = paste("Correlação fraca:", round(cor_fraca, 2)))
+
+#nula
+plot(x_nula, y_nula, main = paste("Correlação nula:", round(cor_nula, 2)))
+```
+
+## Correlação forte, fraca e nula
+  
+Na IDE do RStudio, podemos calcular uma correlação, utilizando a função `cor`, que calcula a correlação entre duas ou mais variáveis. É possível fazer este calculo tanto importando um conjunto de dados, como criando um conjunto de dados no R.  
+Para exemplificar, iremos criar uma sequência de números pseudoaleatórios, através da função `set.seed`, que nos permite gerar números aleatórios de forma que seja possível replicalos e reproduzilos. Iremos também, utilizar a função `rnorm` para gerar números aleatórios a partir de uma distribuição normal e simular uma análise estatística.  
+
+A partir disso iremos calcular a correlação utilizando a função `cor` que por padrão, utiliza a fórmula do **coeficiente de correlação de Pearson** que nos dá uma medida de grau de correlação linear entre duas variáveis, sendo sua fórmula matemática dada por:  
+
+$$r = \frac{\sum xy - \frac{\left ( \sum x \right )\left ( \sum y \right )}{n}}{\sqrt{\left [ \sum x^2 - \frac{\left ( \sum x \right )^2}{n}\left [ \sum y^2\frac{\left ( \sum y \right )^2}{n} \right ] \right ]}}$$
+
+
+Vamos começar criando um exemplo para uma correlação forte:
+
+```{r, message=FALSE, warning=FALSE}
+#criando uma reprodutibilidade de dados
+set.seed(123)
+
+#Criando os vetores para os eixos x e y
+x_forte <- rnorm(100, mean = 0, sd = 1)
+y_forte <- x_forte + rnorm(100, mean = 0, sd = 1)
+
+```
+
+Nesta etapa, criamos variáveis para representar o eixo x e y.  
+Em **x_forte**, nós utilizanos a função `rnorm` para gerar números aleatórios a partir de uma distribuição normal, de forma que atribuimos o número 100, indicando que queremos uma quantidade de 100 amostras. Através do argumento `mean = 0` nós especificamos a média da distribuição normal que será usada para gerar os números aleatórios, por isso, nós definimos a média nesse exemplo como 0, indicando que em média, os números produzidos aqui estarão próximos a 0. O argumento `sd = 1`, serve para calcular o desvio padrão da nossa distribuição normal, lembrando que, o desvio padrão é responsável por controlar o grau de dispersão dos pontos. Aqui nós definimos o desvio padrão como 1.  
+  
+Em **y_forte** nós seguimos o mesmo padrão anterior, com diferença de que somamos a variável **x_forte** para criar uma relação e um padrão linear entre as variáveis.  
+
+```{r, message=FALSE, warning=FALSE}
+#Calculando a correlação entre x_forte e y_forte
+cor_forte <- cor(x_forte, y_forte)
+
+#Criando o gráfico
+plot(x_forte, y_forte, main = paste("Correlação forte:", round(cor_forte, 2)))
+```
+  
+Para calcular a correlação, nós criamos uma variável **cor_forte** e utilizamos a função `cor` para calcular a correlação das variáveis *x_forte* e *y_forte*, que nos da um resultado de aproximadamente 0.67, demonstrando que temos uma correlação forte.  
+Em seguida, para criar o gráfico, utilizamos a função base do r `plot`, utilizada para plotagem de gráficos, e atribuimos a ele nossas variáveis referente aos eixos x e y. com o argumento `main` nós especificamos o titulo principal do gráfico, juntamente da função `paste("Correlação forte:", round(cor_forte, 2))`. A função `paste` pode ser usada para combinar várias strings em uma única string, e como no título nós estamos atribuindo a frase "Correlação forte" junto do valor ad correlação forte, arredondada para duas casas decimais (função `round`), utilizamos então a função paste.  
+O resultado é um gráfico de dispersão que nos permite ter uma noção de uma correlação linear forte entre variáveis.  
+  
+Agora, seguindo os mesmos fundamentos, vamos criar um exemplo para **correlação fraca**:  
+
+```{r, message=FALSE, warning=FALSE}
+#Criando as variáveis
+x_fraca <- rnorm(100, mean = 0, sd = 1)
+y_fraca <- 0.5 * x_fraca + rnorm(100, mean = 0, sd = 1)
+
+```  
+ 
+Seguindo o mesmo padrão, criamos duas variáveis, uma para o eixo x e outra para o eixo y. Na variável **x_fraca**, seguimos o mesmo passo anterior. Para a variável **y_fraca** nós seguimos também, o mesmo passo anterior, com a diferença de que aqui, nós multiplicamos 0.5 pela variável *x_fraca* para garantir a aleatoriedade entre as variáveis e definir o eixo y, igualando a metade dos valores do eixo x, de forma que ainda permaneça de forma linear e diretamente proporcional.  
+
+```{r, message=FALSE, warning=FALSE}
+#Calculando a correlação
+cor_fraca <- cor(x_fraca, y_fraca)
+
+#Criando o gráfico
+plot(x_fraca, y_fraca, main = paste("Correlação fraca:", round(cor_fraca, 2)))
+
+```
+
+A partir da mesma função `cor`, nós calculamos a correlação dos eixos x e y, referente a correlação fraca, e obtivemos um valor igual a aproximadamente 0.38, indicando uma correlação fraca. Em seguinda utilizamos a função `plot`, seguindo os mesmos passos anteriores. O resultado é um gráfico de dispersão que nos permite ter uma noção de uma correlação linear fraca entre variáveis.  
+  
+Por último, vamos criar um exemplo de correlação nula, através dos padrões vistos anteriormente.  
+
+```{r, message=FALSE, warning=FALSE}
+
+#Criando as variáveis dos eixos x e y
+x_nula <- rnorm(100, mean = 0, sd = 1)
+y_nula <- rnorm(100, mean = 0, sd = 1)
+
+```
+
+Para criar as variáveis dos eixos x e y referente ao nosso exemplo de correlação nula, nós seguimos os mesmos passos anteriores, com a diferença que aqui, não somamos o eixo x ao eixo y, para que, de forma proposital, não exista uma relação linear entre as duas variáveis.  
+
+```{r, message=FALSE, warning=FALSE}
+#calculando a correlação
+cor_nula <- cor(x_nula, y_nula)
+
+#Criando o Gráfico
+plot(x_nula, y_nula, main = paste("Correlação nula:", round(cor_nula, 2)))
+```
+
+
+Através da função `cor` e seguindo o mesmo padrão dos exemplos anteriores, nós calculamos a correlação, e em seguida utilizamos a função `plot`, também seguindo os passos anteriores, para criar um gráfico de dispersão que nos permite ter uma noção de uma correlação nula entre duas variáveis.  
+
+## Correlação linear e não linear
+
+Sabe-se que a correlação é o estudo entre as variáveis e também, como elas estão relacionadas. Dessa forma, quando existe uma variação conjunta das variáveis, dizemos que existe uma correlação entre as variáveis. Ademais, temos tipos de correlações lineares e não lineares, que é possível identificar também através de um gráfico de dispersão. Vamos ver alguns exemplos de uma correlação linear e não linear abaixo:  
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# correlação linear
+set.seed(123)  # Para reprodutibilidade
+x_linear <- 1:100
+y_linear <- 2 * x_linear + rnorm(100, mean = 0, sd = 10)  # Correlação linear
+
+# gráfico de dispersão correlação linear
+plot(x_linear, y_linear, main = "Correlação Linear", 
+     xlab = "X", ylab = "Y")
+
+```
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# correlação não linear
+x_nlinear <- seq(-5, 5, length.out = 100)
+y_nlinear <- x_nlinear^2 + rnorm(100, mean = 0, sd = 5)  # Correlação não linear
+
+#  gráfico de dispersão correlação não linear
+plot(x_nlinear, y_nlinear, main = "Correlação Não Linear", 
+     xlab = "X", ylab = "Y")
+
+```
+
+# Regressão  
+
+A Regressão é a equação que representa a relação entre uma **variável resposta** (desfecho) e uma **variável explanatória** (fator).  
+
+Imagine por exemplo, que um medicamento aplicado em um paciente possui um tempo de aplicação (x) e uma melhoria da condição do paciente (y). O tempo de aplicação do medicamento é o **fator variável independente** enquanto que a melhoria da condição do paciente, é o **desfecho variável dependente**.  
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+# exemplo pra regressão linear simples
+library(ggplot2)
+
+# data.frame exemplo
+exemplo_reg <- data.frame(
+  Medicamento = c(0, 1, 2, 3, 4),
+  Melhora = c(2, 7, 12, 17, 22)
+)
+
+# gráfico de dispersão com a linha de regressão linear
+grafico_reg_ex <- ggplot(exemplo_reg, aes(x = Medicamento, y = Melhora)) +
+  geom_point() +   # Adicione os pontos de dados
+  geom_line(method = "lm", se = FALSE, color = "blue") +   # Adicione a linha de regressão linear
+  labs(x = "Tempo doMedicamento (X)", y = "Porcentagem de Melhora (Y)",
+       title = "Regressao Linear Simples - Efeito do Medicamento")
+
+grafico_reg_ex
+```
+  
+Neste exemplo, vemos uma regressão linear simples. Sua fórmula é dada por:  
+
+$$f(x) = bx + a$$  
+
+* $a = \bar{y} - b\bar{x}$ ;  
+
+* $b = \frac{\sum xy - \frac{\left ( \sum x \right )\left ( \sum y \right )}{n}}{\sum x^2 i \frac{\left ( \sum x \right )^2}{n}}$ ;  
+
+* **bx** é variável explanatória (preditiva).  
+
+
+## Calculando Regressão linear simples no R  
+
+Com base nas fórmula, nós podemos calcular a regressão linear simples no na IDE do R, seguindo alguns passos:.  
+
+```{r, message=FALSE, warning=FALSE}
+
+# Criando os vetores
+x <- c(0, 1, 2, 3, 4)
+y <- c(2, 7, 12, 17, 22)
+
+
+# Calculando o número de observações
+n <- length(x)
+
+# Calculando a soma de x, y, x*y, x^2 e y^2
+sum_x <- sum(x)
+sum_y <- sum(y)
+sum_xy <- sum(x * y)
+sum_x2 <- sum(x^2)
+
+# Calculando o coeficiente b
+b <- (sum_xy - (sum_x * sum_y) / n) / (sum_x2 - (sum_x^2) / n)
+
+# Calculando o coeficiente a 
+a <- mean(y) - b * mean(x)
+
+# Exibindo os coeficientes
+cat("Coeficiente a (interceptação):", a, "\n")
+cat("Coeficiente b (inclinação):", b, "\n")
+```
+  
+Vamos entender os passos realizados:  
+
+* Primeiro, nós criamos os vetores que contém os valores de x e y;  
+
+* Descobrimos nosso **n** referente a  quantidade de dados contidas em x, utilizando a função `length`;  
+
+* Em seguida calculamos a soma de x, y, x*y, x² e y através da função `sum`;  
+
+* Para calcular o coeficiente b, referente a fórmula $b = \frac{\sum xy - \frac{\left ( \sum x \right )\left ( \sum y \right )}{n}}{\sum x^2 i \frac{\left ( \sum x \right )^2}{n}}$ da seguinte forma: criamos uma variável do somatório de xy (*sum_xy*), subtraimos pelo resultado da soma de x (*sum_x*) vezes a soma de y (*sum_y*) e dividimos pelo valor de n (*n*). Dividimos tudo isso pelo resultado da soma de x² (sum_x2) menos a soma de x ao quadrado (*sum_x^2*) dividida pelo valor de n;  
+
+* Para calcular o coeficente a referente a fórmula $a = \bar{y} - b\bar{x}$, criamos uma variável da média de y através da função (`mean`) menos o resultado da variável *b* multiplicado pela média de x (mean(x));  
+
+* Utilizamos a função cat, para nos mostrar uma visualização dos resultados. 
+
+Agora vamos criar um gráfico de regressão linear baseado em nossos resultados:   
+
+```{r, message=FALSE, warning=FALSE}
+
+# Calculando os valores previstos de y com base na equação  
+
+x_valor <- seq(min(x), max(x), length.out = 25)
+y_valor <- a + b * x_valor
+
+
+#Criando um dataframe para os pontos  
+dataframe_exemplo_reg <- data.frame(x = x_valor, y = y_valor)
+
+#Criando o gráfico  
+grafico_reg <- ggplot() +
+  geom_point(data = data.frame(x, y), aes(x, y), color = "red") +
+  geom_line(data = dataframe_exemplo_reg, aes(x, y), color = "black" )+
+  labs(x = "Variavel X", y = "Variavel Y", title = "Regressao Linear Simples")
+
+grafico_reg
+```
+  
+Vamos entender os passos da criação deste gráfico:  
+
+* Primeiro nós definimos o invervalo de valores de x para os quais nós queremos prever nos valores de Y, para isso utilizamos o argumento `seq()` para criar para criar um vetor com 25 valores portanto fizemos `seq(min(x), max(x), length.out = 25`. Com o argumento `seq` nós criamos um vetor com espaços iguais entre o valor mínimo  e o valor máximo de x `seq(min(x), max(x))`, e com o argumento `length.out = 25` nós definimos a quantidade de valores desejados.  
+
+* Em seguida, criamos a variável `y_valor <- a + b * x_valor`, onde nós utilizamos a função de regressão linear simples $f(x) = a + bx$ para calcular os valores previstos de Y para cada um dos valores de X dentro do intervalo que nós definimos (25). Como já temos o resultado de a, b e x_valor, com base nas variáveis criadas, só precisamos aplicar a fórmula;  
+
+* O próximo passo foi criar um dataframe com nossos dados (`dataframe_exemplo_reg <- data.frame(x = x_valor, y = y_valor)`), aqui nós definimos a coluna x com a variável *x_valor* e a coluna y com a variável *y_valor*. 
+
+Utilizando a biblioteca **ggplot2** nós seguimos alguns passos para criar o gráfico: 
+
+* Primeiro nós **adicionamos os pontos no gráfico**, através da função `geom_point` onde especificamos quais dados queriamos usar através do argumento `data = data.frame(x, y)` definindo que queremos utilizar os dados contidos na variável x e y. Em seguida mapeamos as variáveis x e y através do argumento `aes(x, y)` e definimos a cor através do argumento `color`;  
+
+* **Adicionamos a linha de regressão** através da função `geom_line()`, onde especificamos que as linhas do noss gráfico serão referente aos dados contidos no nosso dataframe `data = data_exemplo_reg`, e da mesma forma anterior, mapeamos as variáveis x e y através do argumento `aes` e definimos a cor com o argumento `color`;  
+
+* **Adicionamos os rótulos e o título** do gráfico utilizando a função `labs()`, onde nós definimos os rotúlos pro eixo x e y e o título do gráfico através do argumento `title`  
+
+Lembrando que, interligamos todos os passos do gráfico, através do operador `+`. O resultado é um gráfico de regressão linear simples do nosso exemplo.  
+
+## Outro método de criação do gráfico de regressão  
+
+Um método comumente utiliado e relativamente mais simples de se calcular uma regressão no Rstudio, é utilizando a função `lm()`. Esta função pode ser usada para calcular e ajustar modelos de regressão linear. Abreviada da palavra "linear model" esta função é amplamente utilizada para modelar a relação de uma variável dependente (Y) e uma variável independente (X), com base na equação de linearidade.  
+No tópico anterior, nós calculamos uma regressão linear, com base em uma equação específica, e por isso, desenvolvemos alguns passos para encontrar o resultado correto, mostrando que é possível desenvolver diferentes formas para se realizar análises no R.  
+Vamos então, desenvolver um exemplo, com os mesmos valores de x e y vistos anteriormente, para calular e criar um gráfico de regressão linear utilizando a função `lm()`.      
+
+Imagine que você quer encontrar o templo de aplicação de um medicamento (x) em relação a porcentagem de melhora da condição de um paciente (Y): 
+
+```{r, message=FALSE, warning=FALSE}
+# data.frame exemplo
+exemplo_reg <- data.frame(
+  Medicamento = c(0, 1, 2, 3, 4),
+  Melhora = c(2, 7, 12, 17, 22)
+)
+
+#Ajustando o modelo de regressão linear 
+modelo_reg <- lm(Melhora ~ Medicamento, data = exemplo_reg)
+
+summary(modelo_reg)
+```
+
+Vamos entender os passos para encontrar o resultado deste exemplo de regressão linear:  
+
+* Primeiro, nós criamos um data.frame com os valores referente ao eixo x (Medicamento) e eixo y (Melhora);  
+
+* Criamos a variável `modelo_reg` para armazenar os resultados da nossa regressão linear. Para `Melhora ~ Medicamento` nós especificamos que tipo de relação queremos modelar, nesse caso queremos modelar a variável independente (Medicamento) com a variável dependente (Melhora). Em seguida nós utilizamos o argumento `data = exemplo_reg` para especificar que queremos usar o dataframe *exemplo_reg* que contém os valores de x e y, em nossa regressão;  
+
+* Quando este código é executado, é feito um ajuste do modelo de regressão linear, de maneira automática. Ou seja, será calculado os coeficientes de inclinação e interceptação, que irão diminuir a soma dos quadrados dos erros existentes entre os valores contidos em "Melhora" para com os valores que serão previstos na linha de regressão;  
+
+* Com a função `summary()` nós exibimos um resumo completo do modelo, que nos mostra os coeficiente, os testes estatísticos, p-valores, coeficiente de determinação, dentre outros;  
+
+Agora, com base no modelo de regressão linear criado, vamos criar o gráfico:  
+
+```{r, message=FALSE, warning=FALSE}  
+#Criando o gráfico de regressão  
+
+grafico_reg_medicamento <- ggplot(data = exemplo_reg, aes(x = Medicamento, y = Melhora)) +
+  geom_point(color = "blue") + 
+  geom_line(method = "lm", se = FALSE, color = "red") + 
+  labs(x = "Medicamento", y = "Melhora", title = "Regressao Linear Simples")
+  
+grafico_reg_medicamento
+```
+
+Vamos entender a criação deste gráfico feito com a biblioteca **ggplot2**:  
+
+* Primeiro, nós utilizamos a função `ggplot()` para criar o objeto de plot `gplot(data = exemplo_reg, aes(x = Medicamento, y = Melhora))`. Com o argumento `data = exemplo_reg`, nós especificamos que queremos utilziar no gráfico os dados contidos no data frame *exemplo_reg*, em seguida, utilizamos o argumento `aes(x = Medicamento, y = Melhora)` para mapear as variáveis do nosso gráfico, definindo o eixo x e y;  
+
+* Utilizamos a função `geom_pont()` para definir os pontos do gráfico, e o argumento `color()` para definir uma cor;  
+
+* Com a função `geom_line()` nós adicionamos uma linha de regressão linear no gráfico, onde atribuimos o argumento `method = "lm"` para especificar que queremos ajustar a linha para uma regressão linear simples. Utilizamos também, o argumento `se = FALSE` para evitar que o intervalo de confiança seja apresentado junto com a linha de regressão (caso queira que seja apresentado, mude `FALSE` para `TRUE`). Definimos também, a cor da linha de regerssão através do argumento `color = `;  
+
+* Com a função `labs()`, atribuimos os rótulos que queremos nos eixos x e y assim como a legenda do gráfico;  
+
+O resultado é um gráfico de regressão linear simples, utilizando a função `lm()` para encontrar a regressão.  
+
+# Fim do módulo  
+
+Neste tutorial, começamos a entrar de fato no entendimento das análises estatísticas, vendo o básico sobre correlação e regressão. Nos tutoriais a seguir, iremos aprofudar ainda mais e moutros métodos de análises estatísticas.  
+
+
+
+
+
+
+
+</div>
