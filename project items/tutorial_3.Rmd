@@ -2,8 +2,7 @@
 title: | 
   ![](https://i.imgur.com/SWWUQpP.png){width=500px style="display: block; margin:0 auto;"} 
   Tutorial 4 - Entendendo a relação entre variáveis por meio do estudo de correlação e regressão: da construção de gráficos aos testes estatísticos
-author: "Victor Lobato dos Santos"
-date: "2023-03-22"
+author: "Victor Lobato dos Santos; Wellington Donizet Ferreira"
 output:
   html_document:
     highlight: haddock
@@ -29,7 +28,7 @@ Os diagramas de dispersão, nos dão uma noção da correlação entre variávei
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 set.seed(123)
 
-x_forte <- rnorm(100, mean = 0, sd = 1)
+x_forte <- rnorm(100, mean = 0, sd = 2)
 y_forte <- x_forte + rnorm(100, mean = 0, sd = 1)
 
 x_fraca <- rnorm(100, mean = 0, sd = 1)
@@ -70,14 +69,14 @@ Vamos começar criando um exemplo para uma correlação forte:
 #criando uma reprodutibilidade de dados
 set.seed(123)
 
-#Criando os vetores para os eixos x e y
-x_forte <- rnorm(100, mean = 0, sd = 1)
+#Criando as variáveis para os eixos x e y
+x_forte <- rnorm(100, mean = 0, sd = 2)
 y_forte <- x_forte + rnorm(100, mean = 0, sd = 1)
 
 ```
 
 Nesta etapa, criamos variáveis para representar o eixo x e y.  
-Em **x_forte**, nós utilizanos a função `rnorm` para gerar números aleatórios a partir de uma distribuição normal, de forma que atribuimos o número 100, indicando que queremos uma quantidade de 100 amostras. Através do argumento `mean = 0` nós especificamos a média da distribuição normal que será usada para gerar os números aleatórios, por isso, nós definimos a média nesse exemplo como 0, indicando que em média, os números produzidos aqui estarão próximos a 0. O argumento `sd = 1`, serve para calcular o desvio padrão da nossa distribuição normal, lembrando que, o desvio padrão é responsável por controlar o grau de dispersão dos pontos. Aqui nós definimos o desvio padrão como 1.  
+Em **x_forte**, nós utilizanos a função `rnorm` para gerar números aleatórios a partir de uma distribuição normal, de forma que atribuimos o número 100, indicando que queremos uma quantidade de 100 amostras. Através do argumento `mean = 0` nós especificamos a média da distribuição normal que será usada para gerar os números aleatórios, por isso, nós definimos a média nesse exemplo como 0, indicando que em média, os números produzidos aqui estarão próximos a 0. O argumento `sd = 2`, serve para calcular o desvio padrão da nossa distribuição normal, lembrando que, o desvio padrão é responsável por controlar o grau de dispersão dos pontos. Aqui nós definimos o desvio padrão como 1.  
   
 Em **y_forte** nós seguimos o mesmo padrão anterior, com diferença de que somamos a variável **x_forte** para criar uma relação e um padrão linear entre as variáveis.  
 
@@ -90,7 +89,7 @@ plot(x_forte, y_forte, main = paste("Correlação forte:", round(cor_forte, 2)))
 ```
   
 Para calcular a correlação, nós criamos uma variável **cor_forte** e utilizamos a função `cor` para calcular a correlação das variáveis *x_forte* e *y_forte*, que nos da um resultado de aproximadamente 0.67, demonstrando que temos uma correlação forte.  
-Em seguida, para criar o gráfico, utilizamos a função base do r `plot`, utilizada para plotagem de gráficos, e atribuimos a ele nossas variáveis referente aos eixos x e y. com o argumento `main` nós especificamos o titulo principal do gráfico, juntamente da função `paste("Correlação forte:", round(cor_forte, 2))`. A função `paste` pode ser usada para combinar várias strings em uma única string, e como no título nós estamos atribuindo a frase "Correlação forte" junto do valor ad correlação forte, arredondada para duas casas decimais (função `round`), utilizamos então a função paste.  
+Em seguida, para criar o gráfico, utilizamos a função base do r `plot`, utilizada para plotagem de gráficos, e atribuimos a ele nossas variáveis referente aos eixos x e y. com o argumento `main` nós especificamos o titulo principal do gráfico, juntamente da função `paste("Correlação forte:", round(cor_forte, 2))`. A função `paste` pode ser usada para combinar várias strings em uma única string, e como no título nós estamos atribuindo a frase "Correlação forte" junto do valor da correlação forte, arredondada para duas casas decimais (função `round`), utilizamos então a função paste.  
 O resultado é um gráfico de dispersão que nos permite ter uma noção de uma correlação linear forte entre variáveis.  
   
 Agora, seguindo os mesmos fundamentos, vamos criar um exemplo para **correlação fraca**:  
@@ -271,7 +270,7 @@ grafico_reg
   
 Vamos entender os passos da criação deste gráfico:  
 
-* Primeiro nós definimos o invervalo de valores de x para os quais nós queremos prever nos valores de Y, para isso utilizamos o argumento `seq()` para criar para criar um vetor com 25 valores portanto fizemos `seq(min(x), max(x), length.out = 25`. Com o argumento `seq` nós criamos um vetor com espaços iguais entre o valor mínimo  e o valor máximo de x `seq(min(x), max(x))`, e com o argumento `length.out = 25` nós definimos a quantidade de valores desejados.  
+* Primeiro nós definimos o intervalo de valores de x para os quais nós queremos prever nos valores de Y. Para isso utilizamos o argumento `seq()` para criar um vetor com 25 valores, portanto, fizemos `seq(min(x), max(x), length.out = 25`. Com o argumento `seq` nós criamos um vetor com espaços iguais entre o valor mínimo  e o valor máximo de x `seq(min(x), max(x))`, e com o argumento `length.out = 25` nós definimos a quantidade de valores desejados.  
 
 * Em seguida, criamos a variável `y_valor <- a + b * x_valor`, onde nós utilizamos a função de regressão linear simples $f(x) = a + bx$ para calcular os valores previstos de Y para cada um dos valores de X dentro do intervalo que nós definimos (25). Como já temos o resultado de a, b e x_valor, com base nas variáveis criadas, só precisamos aplicar a fórmula;  
 
@@ -287,9 +286,9 @@ Utilizando a biblioteca **ggplot2** nós seguimos alguns passos para criar o gr�
 
 Lembrando que, interligamos todos os passos do gráfico, através do operador `+`. O resultado é um gráfico de regressão linear simples do nosso exemplo.  
 
-## Outro método de criação do gráfico de regressão  
+## Calculando regressão com a função lm()  
 
-Um método comumente utiliado e relativamente mais simples de se calcular uma regressão no Rstudio, é utilizando a função `lm()`. Esta função pode ser usada para calcular e ajustar modelos de regressão linear. Abreviada da palavra "linear model" esta função é amplamente utilizada para modelar a relação de uma variável dependente (Y) e uma variável independente (X), com base na equação de linearidade.  
+Um método comumente utilizado e relativamente mais simples de se calcular uma regressão no Rstudio, é utilizando a função `lm()`. Esta função pode ser usada para calcular e ajustar modelos de regressão linear. Abreviada da palavra "linear model" esta função é amplamente utilizada para modelar a relação de uma variável dependente (Y) e uma variável independente (X), com base na equação de linearidade.  
 No tópico anterior, nós calculamos uma regressão linear, com base em uma equação específica, e por isso, desenvolvemos alguns passos para encontrar o resultado correto, mostrando que é possível desenvolver diferentes formas para se realizar análises no R.  
 Vamos então, desenvolver um exemplo, com os mesmos valores de x e y vistos anteriormente, para calular e criar um gráfico de regressão linear utilizando a função `lm()`.      
 
@@ -345,7 +344,7 @@ O resultado é um gráfico de regressão linear simples, utilizando a função `
 
 # Fim do módulo  
 
-Neste tutorial, começamos a entrar de fato no entendimento das análises estatísticas, vendo o básico sobre correlação e regressão. Nos tutoriais a seguir, iremos aprofudar ainda mais e moutros métodos de análises estatísticas.  
+Neste tutorial, começamos a entrar de fato no entendimento das análises estatísticas, vendo o básico sobre correlação e regressão. Nos tutoriais a seguir, iremos aprofudar ainda mais em outros métodos de análises estatísticas.  
 
 
 
